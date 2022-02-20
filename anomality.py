@@ -1,15 +1,16 @@
 import numpy as np 
 import matplotlib.pyplot as plt
 
-
-def get_anomality_factor(flight_volumes, visitors, exhibitors):
+def get_anomality_factor(event):
 
     # flight_volumes = [900, 200, 340, 504, 700, 230, 100]
 
     # visitors = 3000
     # exhibitors = 500
 
-    p = 3 * exhibitors + visitors
+    flight_volumes = event.flight_volumes
+    p = event.p
+
     mu = -1.2
     sigma2 = 0.49
 
@@ -52,7 +53,6 @@ def get_anomality_factor(flight_volumes, visitors, exhibitors):
     r = 15 / sum
     print(r)
 
-
-    anomality_factor = r * p * v
+    anomality_factor = r * v * p
 
     return anomality_factor

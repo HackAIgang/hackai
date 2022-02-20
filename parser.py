@@ -51,7 +51,7 @@ def get_closest_airport(lat, lng):
 
 
 def clean_events():
-    events_df = pd.read_csv(events_file)[['visitors', 'exhibitors', 'lat', 'lng']]
+    events_df = pd.read_csv(events_file)[['visitors', 'exhibitors', 'lat', 'lng', 'start_date', 'end_date']]
     for i, row in events_df.iterrows():
 
         closest_airport = get_closest_airport(row['lat'], row['lng'])
@@ -71,19 +71,19 @@ def clean_events():
             except:
                 events_df.at[i, column] = 0
 
-    print(events_df.head())
+    print(events_df)
     # events_df.to_csv('clean_events.csv')
 
 
-# clean_events()
-mean = 0
-standard_deviation = 2
+clean_events()
+# mean = 0
+# standard_deviation = 2
 
-x_values = np.arange(-20, 20, 0.1)
-y_values = stats.norm(mean, standard_deviation)
+# x_values = np.arange(-20, 20, 0.1)
+# y_values = stats.norm(mean, standard_deviation)
 
-plt.plot(x_values, y_values.pdf(x_values))
-plt.show()
+# plt.plot(x_values, y_values.pdf(x_values))
+# plt.show()
 
 
 
