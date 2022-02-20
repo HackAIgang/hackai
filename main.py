@@ -1,55 +1,56 @@
-import anomality
-# import events
-import parser
-import pandas as pd
+import numpy as np 
+import matplotlib.pyplot as plt
 
-events_file = 'data/events.csv'
+flight_volumes = [900, 200, 340, 504, 700, 230, 100]
 
-class Event:
-    def __init__(self, start_date, end_date, lat, lng, closest_airport, visitors, exhibitors, flights):
-        self.start_date = start_date
-        self.end_date = end_date
-        self.lat = lat
-        self.lng = lng
-        self.closest_airport = get_closest_airport(lat, lng)
-        self.flights = flights
-        self.visitors = visitors
-        self.exhibitors = exhibitors
-        self.p = 3 * exhibitors + visitors
-        self.anomality_factor = get_anomality_factor(self)
+visitors = 3000
+exhibitors = 500
 
-events = []
+p = 3 * exhibitors + visitors
 
-events_df = pd.read_csv(events_file)[['visitors', 'exhibitors', 'lat', 'lng', 'start_date', 'end_date']]
-for i, row in events_df.iterrows():
+mu = -2
+sigma = 2
 
-    closest_airport = get_closest_airport(row['lat'], row['lng'])
-    events_df.at[i, 'iata'] = closest_airport['iata']
-    events_df.at[i, 'distance'] = closest_airport['distance']
+total_volume = 0
 
-    start_date = row['start_date']
-    end_date = row['end_date']
-    lat = row['lat']
-    lng = row['lng']
-    closest_airport = get_closest_airport(lat, lng)
+for i in flight_volumes:
+    total_volume += i
 
-    # columns to normalize
-    average_columns = ['visitors', 'exhibitors']
-    for column in average_columns:
+v = total_volume / 7
 
-        no_commas = str(row[column]).replace(',', '')
-        split = re.split('\D+', no_commas)
 
-        try:
-            num_range = list(map(float, split))
-            events_df.at[i, column] = np.mean(num_range)
-        except:
-            events_df.at[i, column] = 0
+def gaussian_function(x, mu, sigma):
+    return 1/(sigma * np.sqrt(2 * np.pi)) * np.exp( - (x - mu)**2 / (2 * sigma**2) )
 
-    visitors = column[0]
-    exhibitors = column[1]
+def normalise(arr):
+    max = np.amax(arr)
+    norm_array = []
+    for i in arr:
+        norm_array.append(i/max)
+    return norm_array
 
-    event = Event(start_date, end_date, lat, lng, closest_airport, visitors, exhibitors)   
-    events.append(event)
+normal_flight_volumes = normalise(flight_volumes)
 
-# print(events)
+print(normal_flight_volumes)
+
+discrete_values_gd = []
+for x in range(-5, 2):
+    discrete_values_gd.append(gaussian_function(x, mu, sigma))
+
+print(discrete_values_gd)
+
+squared_deviations = []
+for i in range(0, 7):
+    squared_deviations.append((normal_flight_volumes[i]-discrete_values_gd[i]) ** 2)
+
+sum = 0
+for i in range(0, 7):
+    sum += squared_deviations[i]
+
+r = 7 / sum
+print(r)
+
+
+anomality_factor = r * p * v
+
+print(anomality_factor)

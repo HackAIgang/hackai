@@ -6,8 +6,12 @@ import numpy as np
 import json
 import re
 import greatcircle
+import time
+import datetime
 import matplotlib.pyplot as plt
 import scipy.stats as stats
+import matplotlib.dates
+from datetime import datetime
 import tensorflow as tf
 from tensorflow.python.keras import layers
 
@@ -20,6 +24,10 @@ gc = greatcircle.GreatCircle()
 flights_file = 'data/flights_searches.csv'
 events_file = 'data/events.csv'
 airports_file = 'data/airports.json'
+
+
+def to_unix_time(string_time):
+    return time.mktime(datetime.strptime(string_time, "%Y-%m-%d").timetuple())
 
 
 def get_closest_airport(lat, lng):
@@ -51,7 +59,11 @@ def get_closest_airport(lat, lng):
 
 
 def clean_events():
+<<<<<<< HEAD:parser.py
     events_df = pd.read_csv(events_file)[['visitors', 'exhibitors', 'lat', 'lng', 'start_date', 'end_date']]
+=======
+    events_df = pd.read_csv(events_file)[['visitors', 'exhibitors', 'lat', 'lng', 'name']]
+>>>>>>> cee7ae8ea11fc7c4c87d005a87a945d0029a98e3:events.py
     for i, row in events_df.iterrows():
 
         closest_airport = get_closest_airport(row['lat'], row['lng'])
@@ -71,10 +83,16 @@ def clean_events():
             except:
                 events_df.at[i, column] = 0
 
+<<<<<<< HEAD:parser.py
     print(events_df)
+=======
+    # print(events_df.head())
+>>>>>>> cee7ae8ea11fc7c4c87d005a87a945d0029a98e3:events.py
     # events_df.to_csv('clean_events.csv')
+    return events_df
 
 
+<<<<<<< HEAD:parser.py
 clean_events()
 # mean = 0
 # standard_deviation = 2
@@ -83,6 +101,56 @@ clean_events()
 # y_values = stats.norm(mean, standard_deviation)
 
 # plt.plot(x_values, y_values.pdf(x_values))
+=======
+# mean = 0
+# standard_deviation = 2
+#
+# x_values = np.arange(-20, 20, 0.1)
+# y_values = stats.norm(mean, standard_deviation)
+#
+# plt.plot(x_values, y_values.pdf(x_values))
+# plt.show()
+
+arrivals_returns_df = pd.read_csv(flights_file)
+flights_obj = []
+
+for i, arrival_return in arrivals_returns_df.iterrows():
+    arrival_set = False
+    return_set = False
+
+    arrival_obj = {
+        'origin': arrival_return['origin'],
+        'destination': arrival_return['destination'],
+        'unix_time': to_unix_time(arrival_return['arrival_date'])
+    }
+
+    return_obj = {
+        'origin': arrival_return['destination'],
+        'destination': arrival_return['origin'],
+        'unix_time': to_unix_time(arrival_return['return_date'])
+    }
+
+    for j, flight in flights_obj:
+        unix_time = flight['unix_time']
+
+        if not arrival_set and arrival_obj['unix_time'] > unix_time:
+            flights_obj.insert(i + 1, arrival_obj)
+            arrival_set = True
+
+        if not return_set and return_obj['unix_time'] > unix_time:
+            flights_obj.insert(i + 1, arrival_obj)
+            return_set = True
+
+        if arrival_set and return_set:
+            break
+
+
+flights_df = pd.DataFrame(flights_obj)
+print(flights_df)
+
+
+# flights_df.plot(x='index', y='Stock_Index_Price', kind='scatter')
+>>>>>>> cee7ae8ea11fc7c4c87d005a87a945d0029a98e3:events.py
 # plt.show()
 
 
