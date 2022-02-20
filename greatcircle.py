@@ -18,7 +18,7 @@ class GreatCircle(object):
     def __init__(self):
 
         """
-        Create a set of attributes with default values.
+        Create constructor attributes with default values.
         """
 
         self.name1 = None
