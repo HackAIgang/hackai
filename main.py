@@ -1,6 +1,9 @@
 import anomality
-import events
+# import events
 import parser
+import pandas as pd
+
+events_file = 'data/events.csv'
 
 class Event:
     def __init__(self, start_date, end_date, lat, lng, closest_airport, visitors, exhibitors, flights):
@@ -49,4 +52,4 @@ for i, row in events_df.iterrows():
     event = Event(start_date, end_date, lat, lng, closest_airport, visitors, exhibitors)   
     events.append(event)
 
-print(events)
+# print(events)
